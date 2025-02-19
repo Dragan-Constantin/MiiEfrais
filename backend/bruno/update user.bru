@@ -1,0 +1,18 @@
+meta {
+  name: update user
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:3000/user/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "uuid": "6f2611b0-d915-4089-9afa-1a094487234b",
+    "password": "new password"
+  }
+}
