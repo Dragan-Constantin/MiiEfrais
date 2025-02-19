@@ -1,0 +1,23 @@
+{
+  "name": "miiefrei",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node dist/main.js",
+    "dev": "ts-node-dev --respawn -- src/main.ts",
+    "build": "tsc",
+    "format": "prettier --write ./src"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "prettier": "3.5.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
