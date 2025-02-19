@@ -1,7 +1,9 @@
 import express from 'express';
+import 'dotenv/config';
+import database from './utils/database';
 
 const app = express();
-
+database
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
