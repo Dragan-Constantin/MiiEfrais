@@ -29,6 +29,15 @@ describe('sum module', () => {
     expect(updatedUser.password).toBe('newpassword');
   });
 
+
+  test('generate token', async () => {
+    const users = UserService.getAll();
+    let user = users[0];
+    const token = await UserService.generateToken(user);
+
+    user = UserService.getById(user.id)!;
+    expect(token).toEqual(user.token)
+  });
   
   test('delete user', () => {
     const users = UserService.getAll();

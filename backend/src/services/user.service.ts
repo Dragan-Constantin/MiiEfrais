@@ -1,6 +1,6 @@
 import User from "../models/user.model";
 import database from "../utils/database";
-
+import { EncryptJWT } from 'jose';
 
 
 class UserService {
@@ -58,10 +58,25 @@ class UserService {
 
     users[userIndex] = user;
     database.update('user', users);
-
+    
     return user;
   }
-  
+
+
+  async generateToken(user: User): Promise<string> {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    const jwt = await new EncryptJWT({  uuid: user._uuid })
+      .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+      .setIssuedAt()
+      .setExpirationTime('8h')
+      .encrypt(secret);
+
+
+    user.token = jwt;
+    this.update(user);
+
+    return jwt;
+  }
 }
 
 const userService = new UserService();

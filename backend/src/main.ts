@@ -2,7 +2,8 @@ import express from 'express';
 import 'dotenv/config';
 import UserService from './services/user.service';
 import database from './utils/database';
-import userDto from './dtos/user.dto';
+import credsDto from './dtos/user/creds.dto';
+import userDto from './dtos/user/user.dto';
 
 const app = express();
 database.init();
@@ -16,9 +17,9 @@ app.get('/', (req, res) => {
 
 
 app.post('/user', (req, res) => {
-  UserService.create();
+  const user  = UserService.create();
 
-  res.status(201).send({ message: 'User created' });
+  res.status(201).send(new credsDto(user));
 });
 
 app.get('/user/:uuid', (req, res) => {
@@ -74,6 +75,31 @@ app.delete('/user/:uuid', (req, res) => {
 
   UserService.delete(user);
   res.status(200).send({ message: 'User deleted' });
+});
+
+
+app.post('/login', async (req, res) => {
+
+  if (!req.body.id || !req.body.password) {
+    res.status(400).send({ message: 'Username and password are required' });
+    return;
+  }
+
+  const user = UserService.getById(req.body.id);
+
+  if (!user) {
+    res.status(404).send({ message: 'User not found' });
+    return;
+  }
+
+  if (user.password !== req.body.password) {
+    res.status(401).send({ message: 'Invalid password' });
+    return;
+  }
+
+  const token = await UserService.generateToken(user);
+
+  res.status(200).send({ token });
 });
 
 app.listen(3000, () => {
