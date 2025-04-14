@@ -1,6 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import database from '../src/utils/database';
 import UserService from '../src/services/user.service';
+import Role from '../src/utils/role.enum';
 
 describe('sum module', () => {
     beforeAll(() => {
@@ -11,6 +12,7 @@ describe('sum module', () => {
   test('create user', () => {
     const user = UserService.create();
     expect(user).toBeDefined();
+    expect(user.hasRole(Role.STUDENT)).toBe(true);
   });
 
   test('see user by uuid', () => {
@@ -24,9 +26,11 @@ describe('sum module', () => {
     const users = UserService.getAll();
     const user = users[0];
     user.password = 'newpassword';
+    user.role = Role.ADMIN;
     const updatedUser = UserService.update(user);
     
     expect(updatedUser.password).toBe('newpassword');
+    expect(updatedUser.role).toBe(Role.ADMIN);
   });
 
 

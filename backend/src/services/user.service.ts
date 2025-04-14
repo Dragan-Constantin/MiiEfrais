@@ -44,6 +44,11 @@ class UserService {
     return users.find(user => user._uuid === uuid);
   }
 
+  getByToken(token: string): User | undefined {
+    const users = this.getAll();
+    return users.find(user => user.token === token);
+  }
+
   delete(user: User): void {
     const users = this.getAll();
     

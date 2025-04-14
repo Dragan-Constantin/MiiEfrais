@@ -5,14 +5,14 @@ meta {
 }
 
 put {
-  url: http://localhost:3000/user/
+  url: http://localhost:3000/admin/user/0b671e1e-c2cd-414c-a844-68660512bb7a
   body: json
   auth: none
 }
 
 body:json {
   {
-    "uuid": "6f2611b0-d915-4089-9afa-1a094487234b",
-    "password": "new password"
+    "password": "new password",
+    "role": "ADMIN"
   }
 }
