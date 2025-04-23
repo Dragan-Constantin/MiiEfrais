@@ -12,6 +12,7 @@ database.init();
 
 app.use(express.json());
 
+// Login route
 app.post('/login', async (req, res) => {
 
   if (!req.body.id || !req.body.password) {
@@ -36,20 +37,44 @@ app.post('/login', async (req, res) => {
   res.status(200).send({ token });
 });
 
-// ADMIN
-app.use('/admin/*', (req, res, next) => {
+// ALL
+app.use((req: any, res, next) => {
   const token = req.headers['authorization'];
 
   if (!token) {
     res.status(401).send({ message: 'Token is required' });
     return;
   }
-
   const user = UserService.getByToken(token);
+
   if (!user) {
     res.status(401).send({ message: 'Invalid token' });
     return;
   }
+
+  req.user = user;
+
+  next();
+});
+
+// get user profile
+app.get('/profile', async (req: any, res) => {
+  const user = req.user as any;
+
+  if (!user) {
+    res.status(401).send({ message: 'Unauthorized' });
+    return;
+  }
+
+  const dto = new userDto(user);
+  res.status(200).send(dto);
+});
+
+
+// ADMIN
+app.use('/admin/*', (req: any, res, next) => {
+  const user = req.user;
+
 
   if (!user.hasRole(Role.ADMIN)) {
     res.status(403).send({ message: 'Access denied' });
