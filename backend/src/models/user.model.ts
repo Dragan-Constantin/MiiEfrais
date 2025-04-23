@@ -13,18 +13,17 @@ export default class User extends Model {
     constructor(obj: any);
     constructor(id: string, password: string, _role?: Role, token?: string);
 
-    constructor(objOrId: any, password?: string, role?: Role, token?: string) {
-        super();
-        
+    constructor(objOrId: any, password?: string, role?: Role, token?: string) {        
         if (typeof objOrId === 'string') {
+            super();
             this._id = objOrId;
             this._password = password!;
             this._token = token;
             this._role = role || Role.STUDENT;
         } else {
+            super(objOrId._uuid);
             this._id = objOrId._id;
             this._password = objOrId._password;
-            this._uuid = objOrId._uuid;
             this._token = objOrId._token;
             this._role = objOrId._role;
         }

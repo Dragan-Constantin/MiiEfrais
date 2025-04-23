@@ -1,0 +1,18 @@
+meta {
+  name: get classes
+  type: http
+  seq: 10
+}
+
+get {
+  url: http://localhost:3000/admin/class
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "bio",
+    "teacher": "941b965d-38a5-4e0a-9c2e-c9a017e2265f"
+  }
+}

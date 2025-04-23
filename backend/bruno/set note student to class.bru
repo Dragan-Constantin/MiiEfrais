@@ -1,0 +1,27 @@
+meta {
+  name: set note student to class
+  type: http
+  seq: 15
+}
+
+put {
+  url: http://localhost:3000/admin/class/e98794d9-9f02-4c27-a0d8-aa573e523e20/grade
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "grades": [
+      {
+        "student": "b1105b32-86ab-417a-8054-d528a6601f12",
+        "grade": 20
+      },
+      {
+        "student": "c783b0cc-80ec-4def-8c64-68d431df9c74",
+        "grade": 20
+      }
+      
+    ]
+  }
+}

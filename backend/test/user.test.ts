@@ -3,7 +3,7 @@ import database from '../src/utils/database';
 import UserService from '../src/services/user.service';
 import Role from '../src/utils/role.enum';
 
-describe('sum module', () => {
+describe('user test', () => {
     beforeAll(() => {
         database.init();
     });
