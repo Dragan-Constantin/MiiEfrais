@@ -13,7 +13,7 @@ describe('class test', () => {
     });
 
     test('create class', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('TeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
 
@@ -24,12 +24,12 @@ describe('class test', () => {
     });
 
     test('create class with students', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('TeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
 
-        const student1 = UserService.create();
-        const student2 = UserService.create();
+        const student1 = UserService.create('Student1Name');
+        const student2 = UserService.create('Student2Name');
         const classObj = ClassService.create('class2', teacher, [student1, student2]);
         expect(classObj).toBeDefined();
         expect(classObj.name).toBe('class2');
@@ -40,7 +40,7 @@ describe('class test', () => {
     });
 
     test('get all classes', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
         classService.create('class1',teacher);
@@ -50,7 +50,7 @@ describe('class test', () => {
     });
 
     test('get class by id', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
         const classObj = ClassService.create('class1', teacher);
@@ -61,7 +61,7 @@ describe('class test', () => {
     });
 
     test('get class by name', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
         const classObj = ClassService.create('class1', teacher);
@@ -72,24 +72,24 @@ describe('class test', () => {
     });
 
     test('add student', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
 
         const classObj = ClassService.create('class3', teacher);
-        const student = UserService.create();
+        const student = UserService.create('StudentName');
         classObj.addStudent(student);
         expect(classObj.students.length).toBe(1);
         expect(classObj.students[0].id).toBe(student.id);
     });
 
     test('remove student', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
 
         const classObj = ClassService.create('class4', teacher);
-        const student = UserService.create();
+        const student = UserService.create('StudentName');
         classObj.addStudent(student);
         classObj.removeStudent(student);
         expect(classObj.students.length).toBe(0);
@@ -97,7 +97,7 @@ describe('class test', () => {
     });
 
     test('update class', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
 
@@ -109,7 +109,7 @@ describe('class test', () => {
     });
 
     test('delete class', () => {
-        const teacher = UserService.create();
+        const teacher = UserService.create('DefaultTeacherName');
         teacher.role = Role.TEACHER;
         UserService.update(teacher);
 
