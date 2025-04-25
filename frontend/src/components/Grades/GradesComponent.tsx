@@ -14,6 +14,44 @@ interface Module {
   grade: string | null;
 }
 
+const average_grade = 12.6;
+
+const CircularProgress = ({ percentage }: { percentage: number }) => {
+  const circumference = 2 * Math.PI * 18; // radius = 18 (considering stroke width)
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  
+  return (
+    <div className="relative w-12 h-12">
+      <svg className="w-12 h-12 -rotate-90" viewBox="0 0 40 40">
+        {/* Background circle */}
+        <circle
+          cx="20"
+          cy="20"
+          r="18"
+          fill="none"
+          stroke="#E5E7EB"
+          strokeWidth="4"
+        />
+        {/* Progress circle */}
+        <circle
+          cx="20"
+          cy="20"
+          r="18"
+          fill="none"
+          stroke="#22C55E"
+          strokeWidth="4"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-green-500 font-medium text-sm">{Math.round(percentage)}%</span>
+      </div>
+    </div>
+  );
+};
+
 const GradesComponent = () => {
   const [selectedSemester, setSelectedSemester] = useState('2024-2025 - S6');
   
@@ -105,10 +143,8 @@ const GradesComponent = () => {
         <div className="flex items-center gap-3">
           <div className="text-sm text-gray-600">Moyenne générale</div>
           <div className="flex items-center gap-2">
-            <div className="w-12 h-12 rounded-full border-4 border-green-500 flex items-center justify-center">
-              <div className="text-green-500 font-medium">75%</div>
-            </div>
-            <div className="text-2xl font-bold">14.62/20</div>
+            <CircularProgress percentage={(average_grade / 20) * 100} />
+            <div className="text-2xl font-bold">{average_grade}/20</div>
           </div>
         </div>
       </div>

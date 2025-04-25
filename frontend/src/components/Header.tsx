@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 // Using only FontAwesome icons
@@ -14,12 +14,13 @@ import {
   FaBook,
   FaLaptop,
   FaCopy,
-  FaFolder
+  FaFolder,
+  FaUserCog
 } from "react-icons/fa";
 import logo from '../assets/logo-myefrei-pantheon-white.png';
 
 interface DropdownItem {
-  icon: JSX.Element;
+  icon: ReactElement;
   title: string;
   path: string;
 }
@@ -29,53 +30,55 @@ const Header = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const location = useLocation();
 
+  const isAdminRoute = location.pathname.startsWith('/portal/admin');
+
   const scolariteItems: DropdownItem[] = [
     { 
       icon: <FaGradCap className="text-xl text-gray-600" />,
       title: 'Notes et crédits',
-      path: '/scolarite/grades'
+      path: '/portal/student/grades'
     },
     {
       icon: <FaUserAlt className="text-xl text-gray-600" />,
       title: 'Absences',
-      path: '/scolarite/absences'
+      path: '/portal/student/absences'
     },
     {
       icon: <FaStar className="text-xl text-gray-600" />,
       title: 'Répondre à mes enquêtes Efrei',
-      path: '/scolarite/enquetes'
+      path: '/portal/student/enquetes'
     },
     {
       icon: <FaBook className="text-xl text-gray-600" />,
       title: 'Mes espaces Moodle',
-      path: '/scolarite/moodle'
+      path: '/portal/student/moodle'
     },
     {
       icon: <FaLaptop className="text-xl text-gray-600" />,
       title: 'LXP Learning XP',
-      path: '/scolarite/lxp'
+      path: '/portal/student/lxp'
     },
     {
       icon: <FaCopy className="text-xl text-gray-600" />,
       title: 'Copies d\'examen scannées',
-      path: '/scolarite/copies'
+      path: '/portal/student/copies'
     },
     {
       icon: <FaFolder className="text-xl text-gray-600" />,
       title: 'Bulletins, certificats et factures...',
-      path: '/scolarite/documents'
+      path: '/portal/student/documents'
     }
   ];
 
   const navItems = [
     { title: 'ACCUEIL', path: '/portal/student/home' },
     { title: 'PLANNING', path: '/portal/student/planning' },
-    { title: 'SCOLARITÉ', path: '/scolarite', hasDropdown: true, dropdownItems: scolariteItems },
-    { title: "L'ÉCOLE", path: '/ecole', hasDropdown: true },
-    { title: 'VIE ÉTUDIANTE', path: '/vie-etudiante', hasDropdown: true },
-    { title: 'STAGES ET ALTERNANCES', path: '/stages-alternances', hasDropdown: true },
-    { title: 'OUTILS', path: '/outils', hasDropdown: true },
-    { title: 'AIDES', path: '/aides', hasDropdown: true },
+    { title: 'SCOLARITÉ', path: '/portal/student/scolarite', hasDropdown: true, dropdownItems: scolariteItems },
+    { title: "L'ÉCOLE", path: '/portal/student/ecole', hasDropdown: true },
+    { title: 'VIE ÉTUDIANTE', path: '/portal/student/vie-etudiante', hasDropdown: true },
+    { title: 'STAGES ET ALTERNANCES', path: '/portal/student/stages-alternances', hasDropdown: true },
+    { title: 'OUTILS', path: '/portal/student/outils', hasDropdown: true },
+    { title: 'AIDES', path: '/portal/student/aides', hasDropdown: true },
   ];
 
   return (
@@ -83,14 +86,23 @@ const Header = () => {
       <div className="container mx-auto px-6">
         {/* Top Bar */}
         <div className="flex items-center justify-between h-16">
-          {/* Logo and Student Badge */}
+          {/* Logo and Badge */}
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center">
               <img src={logo} alt="Logo myEfrei" className="h-8" />
             </Link>
-            <div className="flex items-center bg-[#F97316] text-white rounded px-2 py-1">
-              <FaGraduationCap className="text-lg" />
-              <span className="ml-1 text-sm">Étudiant</span>
+            <div className={`flex items-center ${isAdminRoute ? 'bg-green-500' : 'bg-[#F97316]'} text-white rounded px-2 py-1`}>
+              {isAdminRoute ? (
+                <>
+                  <FaUserCog className="text-lg" />
+                  <span className="ml-1 text-sm">Admin</span>
+                </>
+              ) : (
+                <>
+                  <FaGraduationCap className="text-lg" />
+                  <span className="ml-1 text-sm">Étudiant</span>
+                </>
+              )}
             </div>
           </div>
 
