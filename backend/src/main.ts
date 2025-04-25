@@ -7,6 +7,8 @@ import userDto from './dtos/user/user.dto';
 import Role, { isRole } from './utils/role.enum';
 import classService from './services/class.service';
 import { ClassDto } from './dtos/class/class.dto';
+import scheduleService from './services/schedule.service';
+import { ScheduleDto } from './dtos/schedule/schedule.dto';
 
 const app = express();
 database.init();
@@ -527,6 +529,116 @@ app.delete('/admin/class/:uuid', (req, res) => {
 
   classService.delete(classObj);
   res.status(200).send({ message: 'Class deleted' });
+});
+
+
+// create schedule
+app.post('/admin/schedule', (req, res) => {
+  const body = req.body;
+
+  if (!body.class) {
+    res.status(400).send({ message: 'Class is required' });
+    return;
+  }
+
+  const classObj = classService.getByUuid(body.class);
+
+  if (!classObj) {
+    res.status(404).send({ message: 'Class not found' });
+    return;
+  }
+
+  if (!body.startTime) {
+    res.status(400).send({ message: 'Start time is required' });
+    return;
+  }
+
+  if (!body.endTime) {
+    res.status(400).send({ message: 'End time is required' });
+    return;
+  }
+
+  // convert to date
+  const startTime = new Date(body.startTime);
+  const endTime = new Date(body.endTime);
+
+  if (isNaN(startTime.getTime())) {
+    res.status(400).send({ message: 'Start time is invalid' });
+    return;
+  }
+
+  if (isNaN(endTime.getTime())) {
+    res.status(400).send({ message: 'End time is invalid' });
+    return;
+  }
+
+  if (startTime >= endTime) {
+    res.status(400).send({ message: 'Start time must be before end time' });
+    return;
+  }
+
+  if (!body.location) {
+    res.status(400).send({ message: 'Location is required' });
+    return;
+  }
+
+  console.log(classObj)
+  const schedule = scheduleService.create(classObj, startTime, endTime, body.location);
+
+  res.status(201).send(new ScheduleDto(schedule));
+});
+
+// get all schedules
+app.get('/admin/schedule', (req, res) => {
+  const schedules = scheduleService.getAll();
+  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  res.status(200).send(dto);
+});
+
+// get schedule by uuid
+app.get('/admin/schedule/:uuid', (req, res) => {
+  const uuid = req.params.uuid;
+
+  const schedule = scheduleService.getByUuid(uuid);
+
+  if (!schedule) {
+    res.status(404).send({ message: 'Schedule not found' });
+    return;
+  }
+
+  res.status(200).send(new ScheduleDto(schedule));
+});
+
+// get schedule by class
+app.get('/admin/schedule/class/:uuid', (req, res) => {
+  const uuid = req.params.uuid;
+
+  const classObj = classService.getByUuid(uuid);
+
+  if (!classObj) {
+    res.status(404).send({ message: 'Class not found' });
+    return;
+  }
+
+  const schedules = scheduleService.getByClass(classObj);
+
+  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  res.status(200).send(dto);
+});
+
+// delete schedule
+app.delete('/admin/schedule/:uuid', (req, res) => {
+  const uuid = req.params.uuid;
+
+  const schedule = scheduleService.getByUuid(uuid);
+
+  if (!schedule) {
+    res.status(404).send({ message: 'Schedule not found' });
+    return;
+  }
+
+  scheduleService.delete(schedule);
+  res.status(200).send({ message: 'Schedule deleted' });
 });
 
 app.listen(3000, () => {
