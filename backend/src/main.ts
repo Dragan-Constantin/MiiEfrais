@@ -336,12 +336,13 @@ app.post('/admin/class', (req, res) => {
   }
 
   const classObj = classService.create(body.name, teacher);
-  res.status(201).send(classObj);
+  res.status(201).send(new ClassDto(classObj));
 });
 
 app.get('/admin/class', (req, res) => {
   const classes = classService.getAll();
-  res.status(200).send(classes);
+  const dto = classes.map(classObj => new ClassDto(classObj));
+  res.status(200).send(dto);
 });
 
 app.get('/admin/class/:locator', (req, res) => {
@@ -357,7 +358,7 @@ app.get('/admin/class/:locator', (req, res) => {
     return;
   }
 
-  res.status(200).send(classObj);
+  res.status(200).send(new ClassDto(classObj));
 });
 
 app.put('/admin/class/:uuid', (req, res) => {
