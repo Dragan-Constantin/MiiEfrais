@@ -108,6 +108,98 @@ app.get('/student/class', (req: any, res) => {
 });
 
 
+// TEACHER
+
+app.use('/teacher/*', (req: any, res, next) => {
+  const user = req.user;
+
+  if (!user.hasRole(Role.TEACHER)) {
+    res.status(403).send({ message: 'Access denied' });
+    return;
+  }
+  next();
+});
+
+// get teacher classes
+app.get('/teacher/class', (req: any, res) => {
+  const user = req.user;
+  const classes = classService.getByTeacher(req.user);
+
+  const dto = classes.map((classObj) => new ClassDto(classObj));
+
+  res.status(200).send(dto);
+
+});
+
+// set class grades
+app.put('/teacher/class/:uuid/grade', (req: any, res) => {
+  const uuid = req.params.uuid;
+
+  const body = req.body;
+
+  console.log(uuid);
+  const classObj = classService.getByUuid(uuid);
+  if (!classObj) {
+    res.status(404).send({ message: 'Class not found' });
+    return;
+  }
+
+  if (!body.grades) {
+    res.status(400).send({ message: 'Grades are required' });
+    return;
+  }
+
+  for (const grade of body.grades) {
+    console.log(grade);
+    if (!grade.student) {
+      res.status(400).send({ message: 'Student is required' });
+      return;
+    }
+
+    if (!classObj.students.some((s) => s._uuid === grade.student)) {
+      res.status(400).send({ message: 'Student is not in the class' });
+      return;
+    }
+
+    if (!grade.grade) {
+      res.status(400).send({ message: 'Grade is required' });
+      return;
+    }
+
+    if (grade.grade < 0 || grade.grade > 20) {
+      res.status(400).send({ message: 'Grade must be between 0 and 20' });
+      return;
+    }
+
+    const student = UserService.getByUuid(grade.student);
+
+    if (!student) {
+      res.status(404).send({ message: 'Student not found' });
+      return;
+    }
+
+    if (student.role !== Role.STUDENT) {
+      res.status(400).send({ message: 'User is not a student' });
+      return;
+    }
+
+    // merge grades
+    const existingGrade = classObj.grades.find((g) => g.uuid === student._uuid);
+    if (existingGrade) {
+      existingGrade.grade = grade.grade;
+    } else {
+      classObj.grades.push({
+        uuid: student._uuid,
+        grade: grade.grade,
+      });
+    }
+  }
+
+  console.log(classObj.grades);
+  classService.update(classObj);
+  res.status(200).send({ message: 'Class updated' });
+});
+
 
 
 // ADMIN
