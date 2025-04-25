@@ -1,15 +1,12 @@
-import User from "../models/user.model";
-import database from "../utils/database";
+import User from '../models/user.model';
+import database from '../utils/database';
 import { EncryptJWT } from 'jose';
-import classService from "./class.service";
-
+import classService from './class.service';
 
 class UserService {
-
   private generatePassword() {
     return Math.random().toString(36).slice(-8);
   }
-
 
   private generateId() {
     const year = new Date().getFullYear().toString();
@@ -27,7 +24,7 @@ class UserService {
     return user;
   }
 
-  getAll(): User[]{
+  getAll(): User[] {
     const users = database.select('user');
 
     return users.map((user: any) => {
@@ -37,47 +34,47 @@ class UserService {
 
   getById(id: string): User | undefined {
     const users = this.getAll();
-    return users.find(user => user.id === id);
+    return users.find((user) => user.id === id);
   }
 
   getByUuid(uuid: string): User | undefined {
     const users = this.getAll();
-    return users.find(user => user._uuid === uuid);
+    return users.find((user) => user._uuid === uuid);
   }
 
   getByName(name: string): User | undefined {
     const users = this.getAll();
-    return users.find(user => user.name === name);
+    return users.find((user) => user.name === name);
   }
 
   getByToken(token: string): User | undefined {
     const users = this.getAll();
-    return users.find(user => user.token === token);
+    return users.find((user) => user.token === token);
   }
 
   delete(user: User): void {
     const users = this.getAll();
-    
-    const userIndex = users.findIndex(u => u.id === user.id);
+
+    const userIndex = users.findIndex((u) => u.id === user.id);
     users.splice(userIndex, 1);
     database.update('user', users);
   }
 
   update(user: User): User {
     const users = this.getAll();
-    const userIndex = users.findIndex(u => u.id === user.id);
+    const userIndex = users.findIndex((u) => u.id === user.id);
 
     users[userIndex] = user;
     database.update('user', users);
-    
+
     return user;
   }
 
-  getGrades(user: User): {className: string, grade: number}[] {
+  getGrades(user: User): { className: string; grade: number }[] {
     const classes = classService.getByStudent(user);
-    const grades: {className: string, grade: number}[] = [];
-    classes.forEach(classObj => {
-      classObj.grades.forEach(grade => {
+    const grades: { className: string; grade: number }[] = [];
+    classes.forEach((classObj) => {
+      classObj.grades.forEach((grade) => {
         if (grade.uuid === user._uuid) {
           grades.push({ className: classObj.name, grade: grade.grade });
         }
@@ -86,15 +83,13 @@ class UserService {
     return grades;
   }
 
-
   async generateToken(user: User): Promise<string> {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-    const jwt = await new EncryptJWT({  uuid: user._uuid })
+    const jwt = await new EncryptJWT({ uuid: user._uuid })
       .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
       .setIssuedAt()
       .setExpirationTime('8h')
       .encrypt(secret);
-
 
     user.token = jwt;
     this.update(user);

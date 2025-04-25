@@ -1,12 +1,11 @@
-import User from "../../models/user.model";
-import userDto from "./user.dto";
-
+import User from '../../models/user.model';
+import userDto from './user.dto';
 
 export default class credsDto extends userDto {
-    private password: string;
+  private password: string;
 
-    constructor(user: User) {
-        super(user);
-        this.password = user.password;
-    }
+  constructor(user: User) {
+    super(user);
+    this.password = user.password;
+  }
 }

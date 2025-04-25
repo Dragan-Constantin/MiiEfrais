@@ -13,12 +13,10 @@ import { ScheduleDto } from './dtos/schedule/schedule.dto';
 const app = express();
 database.init();
 
-
 app.use(express.json());
 
 // Login route
 app.post('/login', async (req, res) => {
-
   if (!req.body.id || !req.body.password) {
     res.status(400).send({ message: 'Username and password are required' });
     return;
@@ -74,7 +72,6 @@ app.get('/profile', async (req: any, res) => {
   res.status(200).send(dto);
 });
 
-
 // STUDENT
 app.use('/student/*', (req: any, res, next) => {
   const user = req.user;
@@ -90,17 +87,15 @@ app.use('/student/*', (req: any, res, next) => {
 app.get('/student/grades', (req: any, res) => {
   const user = req.user;
 
-  
   const grades = UserService.getGrades(user);
   res.status(200).send(grades);
 });
 
-
 app.get('/student/class', (req: any, res) => {
   const user = req.user;
-  
+
   const classes = classService.getByStudent(user);
-  const dto = classes.map(classObj => {
+  const dto = classes.map((classObj) => {
     const dto = new ClassDto(classObj);
     delete dto.grades;
     return dto;
@@ -108,7 +103,6 @@ app.get('/student/class', (req: any, res) => {
 
   res.status(200).send(dto);
 });
-
 
 // get student schedule
 app.get('/student/schedule', (req: any, res) => {
@@ -121,9 +115,7 @@ app.get('/student/schedule', (req: any, res) => {
     schedules.push(...classSchedules);
   }
 
-
-
-  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  const dto = schedules.map((schedule) => new ScheduleDto(schedule));
   res.status(200).send(dto);
 });
 
@@ -147,7 +139,6 @@ app.get('/teacher/class', (req: any, res) => {
   const dto = classes.map((classObj) => new ClassDto(classObj));
 
   res.status(200).send(dto);
-
 });
 
 // set class grades
@@ -156,7 +147,6 @@ app.put('/teacher/class/:uuid/grade', (req: any, res) => {
 
   const body = req.body;
 
-  console.log(uuid);
   const classObj = classService.getByUuid(uuid);
   if (!classObj) {
     res.status(404).send({ message: 'Class not found' });
@@ -169,7 +159,6 @@ app.put('/teacher/class/:uuid/grade', (req: any, res) => {
   }
 
   for (const grade of body.grades) {
-    console.log(grade);
     if (!grade.student) {
       res.status(400).send({ message: 'Student is required' });
       return;
@@ -214,7 +203,6 @@ app.put('/teacher/class/:uuid/grade', (req: any, res) => {
     }
   }
 
-  console.log(classObj.grades);
   classService.update(classObj);
   res.status(200).send({ message: 'Class updated' });
 });
@@ -230,16 +218,13 @@ app.get('/teacher/schedule', (req: any, res) => {
     schedules.push(...classSchedules);
   }
 
-  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  const dto = schedules.map((schedule) => new ScheduleDto(schedule));
   res.status(200).send(dto);
 });
-
-
 
 // ADMIN
 app.use('/admin/*', (req: any, res, next) => {
   const user = req.user;
-
 
   if (!user.hasRole(Role.ADMIN)) {
     res.status(403).send({ message: 'Access denied' });
@@ -247,7 +232,6 @@ app.use('/admin/*', (req: any, res, next) => {
   }
   next();
 });
-
 
 //create user
 app.post('/admin/user', (req, res) => {
@@ -265,8 +249,7 @@ app.post('/admin/user', (req, res) => {
     return;
   }
 
-
-  const user  = UserService.create(body.name);
+  const user = UserService.create(body.name);
 
   res.status(201).send(new credsDto(user));
 });
@@ -274,7 +257,7 @@ app.post('/admin/user', (req, res) => {
 // get all users
 app.get('/admin/users', (req, res) => {
   const users = UserService.getAll();
-  const dto = users.map(user => new userDto(user));
+  const dto = users.map((user) => new userDto(user));
 
   res.status(200).send(dto);
 });
@@ -323,7 +306,7 @@ app.put('/admin/user/:uuid', (req, res) => {
   }
 
   UserService.update(user);
-  res.status(200).send({  message: 'User updated' });
+  res.status(200).send({ message: 'User updated' });
 });
 
 // delete user
@@ -373,7 +356,7 @@ app.post('/admin/class', (req, res) => {
 
 app.get('/admin/class', (req, res) => {
   const classes = classService.getAll();
-  const dto = classes.map(classObj => new ClassDto(classObj));
+  const dto = classes.map((classObj) => new ClassDto(classObj));
   res.status(200).send(dto);
 });
 
@@ -474,14 +457,12 @@ app.put('/admin/class/:uuid/student', (req, res) => {
       }
 
       classObj.removeStudent(student);
-      console.log(classObj.students);
     }
   }
 
   classService.update(classObj);
   res.status(200).send({ message: 'Class updated' });
 });
-
 
 app.put('/admin/class/:uuid/grade', (req, res) => {
   const uuid = req.params.uuid;
@@ -493,19 +474,18 @@ app.put('/admin/class/:uuid/grade', (req, res) => {
     return;
   }
 
-  if(!body.grades) {
+  if (!body.grades) {
     res.status(400).send({ message: 'Grades are required' });
     return;
   }
 
   for (const grade of body.grades) {
-    console.log(grade);
     if (!grade.student) {
       res.status(400).send({ message: 'Student is required' });
       return;
     }
 
-    if  (!classObj.students.some((s) => s._uuid === grade.student)) {
+    if (!classObj.students.some((s) => s._uuid === grade.student)) {
       res.status(400).send({ message: 'Student is not in the class' });
       return;
     }
@@ -532,7 +512,6 @@ app.put('/admin/class/:uuid/grade', (req, res) => {
       return;
     }
 
-
     // merge grades
     const existingGrade = classObj.grades.find((g) => g.uuid === student._uuid);
     if (existingGrade) {
@@ -545,7 +524,6 @@ app.put('/admin/class/:uuid/grade', (req, res) => {
     }
   }
 
-  console.log(classObj.grades);
   classService.update(classObj);
   res.status(200).send({ message: 'Class updated' });
 });
@@ -563,7 +541,6 @@ app.delete('/admin/class/:uuid', (req, res) => {
   classService.delete(classObj);
   res.status(200).send({ message: 'Class deleted' });
 });
-
 
 // create schedule
 app.post('/admin/schedule', (req, res) => {
@@ -615,8 +592,12 @@ app.post('/admin/schedule', (req, res) => {
     return;
   }
 
-  console.log(classObj)
-  const schedule = scheduleService.create(classObj, startTime, endTime, body.location);
+  const schedule = scheduleService.create(
+    classObj,
+    startTime,
+    endTime,
+    body.location
+  );
 
   res.status(201).send(new ScheduleDto(schedule));
 });
@@ -624,7 +605,7 @@ app.post('/admin/schedule', (req, res) => {
 // get all schedules
 app.get('/admin/schedule', (req, res) => {
   const schedules = scheduleService.getAll();
-  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  const dto = schedules.map((schedule) => new ScheduleDto(schedule));
   res.status(200).send(dto);
 });
 
@@ -655,7 +636,7 @@ app.get('/admin/schedule/class/:uuid', (req, res) => {
 
   const schedules = scheduleService.getByClass(classObj);
 
-  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  const dto = schedules.map((schedule) => new ScheduleDto(schedule));
   res.status(200).send(dto);
 });
 
