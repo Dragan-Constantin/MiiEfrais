@@ -6,6 +6,7 @@ import credsDto from './dtos/user/creds.dto';
 import userDto from './dtos/user/user.dto';
 import Role, { isRole } from './utils/role.enum';
 import classService from './services/class.service';
+import { ClassDto } from './dtos/class/class.dto';
 
 const app = express();
 database.init();
@@ -72,6 +73,43 @@ app.get('/profile', async (req: any, res) => {
 });
 
 
+// STUDENT
+app.use('/student/*', (req: any, res, next) => {
+  const user = req.user;
+
+  if (!user.hasRole(Role.STUDENT)) {
+    res.status(403).send({ message: 'Access denied' });
+    return;
+  }
+  next();
+});
+
+// get student grades
+app.get('/student/grades', (req: any, res) => {
+  const user = req.user;
+
+  
+  const grades = UserService.getGrades(user);
+  res.status(200).send(grades);
+});
+
+
+app.get('/student/class', (req: any, res) => {
+  const user = req.user;
+  
+  const classes = classService.getByStudent(user);
+  const dto = classes.map(classObj => {
+    const dto = new ClassDto(classObj);
+    delete dto.grades;
+    return dto;
+  });
+
+  res.status(200).send(dto);
+});
+
+
+
+
 // ADMIN
 app.use('/admin/*', (req: any, res, next) => {
   const user = req.user;
@@ -87,7 +125,22 @@ app.use('/admin/*', (req: any, res, next) => {
 
 //create user
 app.post('/admin/user', (req, res) => {
-  const user  = UserService.create();
+  const body = req.body;
+
+  if (!body.name) {
+    res.status(400).send({ message: 'Name is required' });
+    return;
+  }
+
+  const found = UserService.getByName(body.name);
+
+  if (found) {
+    res.status(400).send({ message: 'User already exists' });
+    return;
+  }
+
+
+  const user  = UserService.create(body.name);
 
   res.status(201).send(new credsDto(user));
 });

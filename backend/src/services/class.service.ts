@@ -26,6 +26,11 @@ class ClassService {
         return classes.find(classObj => classObj._uuid === uuid);
     }
 
+    getByStudent(student: User): Class[] {
+        const classes = this.getAll();
+        return classes.filter(classObj => classObj.students?.some(s => s._uuid === student._uuid));
+    }
+
     getByName(name: string): Class | undefined {
         const classes = this.getAll();
         return classes.find(classObj => classObj.name === name);

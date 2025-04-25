@@ -1,6 +1,7 @@
 import User from "../models/user.model";
 import database from "../utils/database";
 import { EncryptJWT } from 'jose';
+import classService from "./class.service";
 
 
 class UserService {
@@ -16,10 +17,10 @@ class UserService {
     return year + Math.random().toString().slice(-4);
   }
 
-  create(): User {
+  create(name: string): User {
     const id = this.generateId();
     const password = this.generatePassword();
-    const user = new User(id, password);
+    const user = new User(id, name, password);
 
     database.insert('user', user);
 
@@ -44,6 +45,11 @@ class UserService {
     return users.find(user => user._uuid === uuid);
   }
 
+  getByName(name: string): User | undefined {
+    const users = this.getAll();
+    return users.find(user => user.name === name);
+  }
+
   getByToken(token: string): User | undefined {
     const users = this.getAll();
     return users.find(user => user.token === token);
@@ -65,6 +71,19 @@ class UserService {
     database.update('user', users);
     
     return user;
+  }
+
+  getGrades(user: User): {className: string, grade: number}[] {
+    const classes = classService.getByStudent(user);
+    const grades: {className: string, grade: number}[] = [];
+    classes.forEach(classObj => {
+      classObj.grades.forEach(grade => {
+        if (grade.uuid === user._uuid) {
+          grades.push({ className: classObj.name, grade: grade.grade });
+        }
+      });
+    });
+    return grades;
   }
 
 

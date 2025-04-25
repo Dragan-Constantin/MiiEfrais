@@ -10,7 +10,7 @@ describe('user test', () => {
 
 
   test('create user', () => {
-    const user = UserService.create();
+    const user = UserService.create("sam");
     expect(user).toBeDefined();
     expect(user.hasRole(Role.STUDENT)).toBe(true);
   });
