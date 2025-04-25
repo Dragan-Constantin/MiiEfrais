@@ -72,6 +72,19 @@ app.get('/profile', async (req: any, res) => {
   res.status(200).send(dto);
 });
 
+app.post('/logout', async (req: any, res) => {
+  const user = req.user as any;
+  
+  if (!user) {
+    res.status(401).send({ message: 'Unauthorized' });
+    return;
+  }
+
+  await UserService.logout(user);
+
+  res.status(200).send({ message: 'Logged out' });
+});
+
 // STUDENT
 app.use('/student/*', (req: any, res, next) => {
   const user = req.user;

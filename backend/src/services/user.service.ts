@@ -96,6 +96,12 @@ class UserService {
 
     return jwt;
   }
+
+
+  logout(user: User): void {
+    user.token = '';
+    this.update(user);
+  }
 }
 
 const userService = new UserService();
