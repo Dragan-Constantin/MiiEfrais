@@ -1,0 +1,20 @@
+meta {
+  name: add and remove student to class
+  type: http
+  seq: 14
+}
+
+put {
+  url: http://localhost:3000/admin/class/e98794d9-9f02-4c27-a0d8-aa573e523e20/student
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "remove": [],
+    "add": [
+      "0f25424b-0d44-4636-975e-c734d09c3adb"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+meta {
+  name: get schedules by uuid
+  type: http
+  seq: 22
+}
+
+get {
+  url: http://localhost:3000/admin/schedule/9c7cdf56-ebc5-4c13-8866-45f381de925e
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..jvtf_7XIJJIgrYKM.GM8vMvj9dK-KRuxkML1RUK67qF-hCMPOIsvL5Ku2fByXTsq5JOad_13mP9TSzwehA2z0TIB0ZHYkk2XTR9BBtg6xhesdUBLNFgCoeU-uPe5c.MUFIql5fZAALPLdepACjHg
+}
+
+body:json {
+  {
+    "startTime": 1745570962243,
+    "endTime": 1745588962243,
+    "class": "2e02da32-7444-43ca-b991-f2adb90d1d18",
+    "location": "B101"
+  }
+}

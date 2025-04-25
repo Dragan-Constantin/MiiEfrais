@@ -1,0 +1,22 @@
+meta {
+  name: get grades (students)
+  type: http
+  seq: 16
+}
+
+get {
+  url: http://localhost:3000/student/grades
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..T222mRcrfHUVrV1F.grGjHiyMmn3nbKam_xENX8cSEHU4uvvD4kQNSdFNT3z-ulF0sIYL53HW13F3X7SAnFOQtsroCy03D5B__cKa6DdyhYFRokfKb8M8trUzTywF.UjQtxiysGraU2UaIGbARMA
+}
+
+body:json {
+  {
+    "id": "20252346",
+    "password": "f5n73wmj"
+  }
+}
