@@ -110,6 +110,23 @@ app.get('/student/class', (req: any, res) => {
 });
 
 
+// get student schedule
+app.get('/student/schedule', (req: any, res) => {
+  const user = req.user;
+
+  const classes = classService.getByStudent(user);
+  const schedules = [];
+  for (const classObj of classes) {
+    const classSchedules = scheduleService.getByClass(classObj);
+    schedules.push(...classSchedules);
+  }
+
+
+
+  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  res.status(200).send(dto);
+});
+
 // TEACHER
 
 app.use('/teacher/*', (req: any, res, next) => {
@@ -200,6 +217,21 @@ app.put('/teacher/class/:uuid/grade', (req: any, res) => {
   console.log(classObj.grades);
   classService.update(classObj);
   res.status(200).send({ message: 'Class updated' });
+});
+
+// get teacher schedule
+app.get('/teacher/schedule', (req: any, res) => {
+  const user = req.user;
+
+  const classes = classService.getByTeacher(user);
+  const schedules = [];
+  for (const classObj of classes) {
+    const classSchedules = scheduleService.getByClass(classObj);
+    schedules.push(...classSchedules);
+  }
+
+  const dto = schedules.map(schedule => new ScheduleDto(schedule));
+  res.status(200).send(dto);
 });
 
 
